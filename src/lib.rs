@@ -1,14 +1,18 @@
+
+#[derive(Debug,PartialEq)]
 enum Guess {
     Wrong(char),
     Correct(char, Vec<usize>),
 }
 
+#[derive(Debug,PartialEq)]
 pub enum GuessResult {
     Wrong,
     Correct,
     Repeat,
 }
 
+#[derive(Debug,PartialEq)]
 pub struct Game {
     word: String,
     guesses: Vec<Guess>,
@@ -112,5 +116,51 @@ impl Guess {
             Self::Wrong(ch) => *ch,
             Self::Correct(ch, _) => *ch,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Game, GuessResult, Guess};
+
+    #[test]
+    fn test_new() {
+        let game = Game::new("test", 10);
+
+        assert_eq!(game.tries_allowed, 10);
+        assert_eq!(game.tries_left, 10);
+        assert_eq!(game.word, "test");
+        assert_eq!(game.guesses.len(), 0);
+    }
+
+    #[test]
+    fn test_guess_success() {
+        let mut game = Game::new("test", 10);
+
+        let result = game.guess('t');
+
+        assert_eq!(result, GuessResult::Correct);
+        assert_eq!(game.guesses, vec![Guess::Correct('t', vec![0, 3])]);
+    }
+
+    #[test]
+    fn test_guess_wrong() {
+        let mut game = Game::new("test", 10);
+
+        let result = game.guess('z');
+
+        assert_eq!(result, GuessResult::Wrong);
+        assert_eq!(game.guesses, vec![Guess::Wrong('z')]);
+    }
+
+    #[test]
+    fn test_guess_repeat() {
+        let mut game = Game::new("test", 10);
+
+        let _ = game.guess('t');
+        let result = game.guess('t');
+
+        assert_eq!(result, GuessResult::Repeat);
+        assert_eq!(game.guesses, vec![Guess::Correct('t', vec![0, 3])]);
     }
 }
