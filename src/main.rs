@@ -1,5 +1,5 @@
 use hangman_lib::Game;
-use std::io::{self, Write};
+use std::{io::{self, Write}, process::Command};
 use rpassword;
 
 fn main() {
@@ -7,11 +7,17 @@ fn main() {
 
     let word = ask_search_word();
     let mut game = Game::new(&word, 5);
+    clear();
+
+    print_hangman(&game);
 
     while (game.tries_left() > 0) && (!game.word_found()) {
         let guesses = ask_letters();
+        clear();
 
         handle_guesses(&mut game, guesses);
+
+        print_hangman(&game);
 
         print_stats(&game);
     }
@@ -60,6 +66,59 @@ fn handle_guesses(game: &mut Game, guesses: Vec<char>) {
             hangman_lib::GuessResult::Wrong => println!("{} is not used in the word", ch),
             hangman_lib::GuessResult::Correct => println!("{} is found!", ch),
             hangman_lib::GuessResult::Repeat => println!("{} is already used as guess.", ch),
+        }
+    }
+}
+
+fn clear() {
+    let output = Command::new("clear").output().unwrap();
+    println!("{}", String::from_utf8_lossy(&output.stdout));
+}
+
+fn print_hangman(game: &Game) {
+    let max_tries = game.tries_allowed();
+    let tries_left = game.tries_left();
+    let tries = max_tries - tries_left;
+
+    if tries_left == 0 {
+        println!("_______");
+        println!("|     |");
+        println!("|     xO");
+        println!("|    /|\\");
+        println!("|    / \\");
+    } else if tries_left == 1 {
+        println!("______");
+        println!("|     |");
+        println!("|     O");
+        println!("|    /|\\");
+        println!("|    / \\");
+    } else {
+        println!("______");
+
+        for _ in 0..tries_left-1 {
+            println!("|");
+        }
+
+        println!("|     O");
+        println!("|    /|\\");
+        println!("|    / \\");
+    }
+
+    let boxes = if tries_left == 0 {
+        tries - 2
+    } else if tries_left == 1 {
+        tries - 1
+    } else {
+        tries
+    };
+
+    if tries_left > 0 {
+        for _ in 0..boxes {
+            println!("|    |||");
+        }
+    } else {
+        for _ in 0..boxes {
+            println!("|");
         }
     }
 }

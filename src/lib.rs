@@ -13,6 +13,7 @@ pub struct Game {
     word: String,
     guesses: Vec<Guess>,
     tries_left: u32,
+    tries_allowed: u32,
 }
 
 impl Game {
@@ -21,6 +22,7 @@ impl Game {
             word: word.to_string(),
             guesses: Vec::new(),
             tries_left: tries,
+            tries_allowed: tries,
         }
     }
 
@@ -54,6 +56,10 @@ impl Game {
 
     pub fn tries_left(&self) -> u32 {
         self.tries_left
+    }
+
+    pub fn tries_allowed(&self) -> u32 {
+        self.tries_allowed
     }
 
     pub fn word_found(&self) -> bool {
