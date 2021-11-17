@@ -1,5 +1,6 @@
 use hangman_lib::Game;
 use std::io::{self, Write};
+use rpassword;
 
 fn main() {
     println!("Welcome to the hangman game!");
@@ -25,12 +26,7 @@ fn main() {
 fn ask_search_word() -> String {
     println!("Enter a word to search: ");
 
-    let mut buffer = String::new();
-    let result = io::stdin().read_line(&mut buffer);
-
-    if let Err(err) = result {
-        panic!("{}", err.to_string());
-    }
+    let buffer = rpassword::read_password().unwrap();
 
     buffer.to_lowercase().trim().to_string()
 }
@@ -39,6 +35,7 @@ fn ask_letters() -> Vec<char> {
     let mut buffer = String::new();
     print!("Enter one or more letters: ");
     io::stdout().flush().unwrap();
+
     io::stdin().read_line(&mut buffer).unwrap();
 
     buffer.to_lowercase().trim().chars().into_iter().collect()
