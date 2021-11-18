@@ -1,5 +1,5 @@
 use hangman_lib::Game;
-use std::{io::{self, Write}, process::Command};
+use std::{io::{self, Write}};
 use rpassword;
 
 fn main() {
@@ -71,8 +71,7 @@ fn handle_guesses(game: &mut Game, guesses: Vec<char>) {
 }
 
 fn clear() {
-    let output = Command::new("clear").output().unwrap();
-    println!("{}", String::from_utf8_lossy(&output.stdout));
+    print!("{}[2J", 27 as char)
 }
 
 fn print_hangman(game: &Game) {
